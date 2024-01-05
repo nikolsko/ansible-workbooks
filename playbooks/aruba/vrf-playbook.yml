@@ -1,0 +1,33 @@
+- hosts: all
+  collections:
+    - arubanetworks.aoscx
+  gather_facts: False
+  tasks:
+    - name: Create VRFs
+      aoscx_vrf:
+        name: '{{ item }}'
+        state: create
+      loop:
+        - corp-mgmt
+        - corp-client
+        - corp-client-restricted
+        - corp-print
+        - internet
+        - ot
+        - iot-managed
+        - iot-unmanaged
+- hosts: all
+  collections:
+    - arubanetworks.aoscx
+  vars:
+    ansible_connection: network_cli
+  gather_facts: False
+  tasks:
+    - name: Execute show vrfs on the switch
+      aoscx_command:
+        commands: ['show vrf']
+      register: show_vrf_output
+
+    - name: Output registered variable
+      debug:
+        var: show_vrf_output
